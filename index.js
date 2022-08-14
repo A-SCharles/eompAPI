@@ -126,7 +126,8 @@ router.post("/users", bodyParser.json(), async (req, res) => {
       email: bd.email,
     };
     let date = {
-      date: new Date().toLocaleDateString(),
+      date: new Date().toISOString().slice(0, 10)
+      // date: new Date().toLocaleDateString(),
     };
     let cart = {
       cart: null,
