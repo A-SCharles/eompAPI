@@ -434,7 +434,7 @@ router.delete("/users/:id/cart/:prodid", middleware, (req, res) => {
     let item = JSON.parse(results[0].cart).filter((x) => {
       return x.prodid != req.params.prodid;
     });
-    res.send(item)
+    // res.send(item)
     const strQry = `
   UPDATE users
   SET cart = ?
