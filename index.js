@@ -7,7 +7,10 @@ const path = require("path");
 const db = require("./config/dbconn");
 const jwt = require("jsonwebtoken");
 const middleware = require("./middleware/auth");
-const { compare, hash } = require("bcrypt");
+const {
+  compare,
+  hash
+} = require("bcrypt");
 const e = require("express");
 // Express app
 const app = express();
@@ -57,7 +60,7 @@ router.get("/", (req, res) => {
 //     e.id = i +1
 //   });
 //   const strup = `UPDATE users SET id = ? WHERE id = ?`
-  
+
 //   db.query(strup, [result], (err, results) => {
 //     if (err) throw err
 //     res.json({
@@ -79,8 +82,7 @@ router.get("/users", middleware, (req, res) => {
       if (err) throw err;
       res.json({
         status: 200,
-        results: results <= 0 ? "Sorry, no product was found." : results,
-        test: req.user.id,
+        results: results <= 0 ? "Sorry, no users were found." : results,
       });
     });
   } else {
@@ -145,9 +147,6 @@ router.post("/users", bodyParser.json(), async (req, res) => {
         bd.password = await hash(bd.password, 10);
         // Query
         const strQry = `
-        
-        ALTER TABLE users AUTO_INCREMENT = 1;
-        
         INSERT INTO users(firstname, lastname, email, usertype, contact, address, password, joindate)  
         VALUES(?, ?, ?, ?, ?, ?, ?, ?);
         `;
@@ -165,37 +164,13 @@ router.post("/users", bodyParser.json(), async (req, res) => {
           ],
           (err, results) => {
             if (err) throw err;
-            const payload = {
-              user: {
-                firstname: bd.firstname,
-                lastname: bd.lastname,
-                email: bd.email,
-                usertype: bd.usertype,
-                contact: bd.contact,
-                address: bd.address,
-                cart: cart.cart,
-              },
-            };
-            jwt.sign(
-              payload,
-              process.env.jwtSecret,
-              {
-                expiresIn: "365d",
-              },
-              (err, token) => {
-                if (err) throw err;
-                res.json({
-                  msg: "Registration Successful",
-                  user: payload.user,
-                  token: token,
-                });
-                // res.json(payload.user);
-              }
-            );
-          }
-        );
-      }
-    });
+
+            res.json({
+              msg: "Registration Successful",
+            });
+          })
+      };
+    })
   } catch (e) {
     console.log(`Registration Error: ${e.message}`);
   }
@@ -215,7 +190,10 @@ router.post("/users", bodyParser.json(), async (req, res) => {
 router.patch("/users", bodyParser.json(), (req, res) => {
   try {
     // Get email and password
-    const { email, password } = req.body;
+    const {
+      email,
+      password
+    } = req.body;
     const strQry = `
         SELECT *
         FROM users 
@@ -250,8 +228,7 @@ router.patch("/users", bodyParser.json(), (req, res) => {
           };
           jwt.sign(
             payload,
-            process.env.jwtSecret,
-            {
+            process.env.jwtSecret, {
               expiresIn: "365d",
             },
             (err, token) => {
@@ -283,7 +260,13 @@ router.patch("/users", bodyParser.json(), (req, res) => {
 
 // Update users
 router.put("/users/:id", middleware, bodyParser.json(), (req, res) => {
-  const { firstname, lastname, email, address, usertype } = req.body;
+  const {
+    firstname,
+    lastname,
+    email,
+    address,
+    usertype
+  } = req.body;
 
   const user = {
     firstname,
@@ -372,7 +355,9 @@ router.get("/users/:id/cart", middleware, (req, res) => {
 // add cart items
 router.post("/users/:id/cart", middleware, bodyParser.json(), (req, res) => {
   try {
-    let { id } = req.body;
+    let {
+      id
+    } = req.body;
     const qCart = ` SELECT cart
     FROM users
     WHERE id = ?;
@@ -441,16 +426,16 @@ router.delete("/users/:id/cart/:prodid", middleware, (req, res) => {
   SET cart = ?
   WHERE id= ? ;
   `;
-      db.query(
-        strQry,
-        [JSON.stringify(item), req.user.id],
-        (err, data, fields) => {
-          if (err) throw err;
-          res.json({
-            msg: "Item Removed from Cart",
-          });
-        }
-      );
+    db.query(
+      strQry,
+      [JSON.stringify(item), req.user.id],
+      (err, data, fields) => {
+        if (err) throw err;
+        res.json({
+          msg: "Item Removed from Cart",
+        });
+      }
+    );
   });
 });
 
@@ -572,7 +557,13 @@ router.get("/products/:id", (req, res) => {
 
 // Update product
 router.put("/products/:id", middleware, bodyParser.json(), async (req, res) => {
-  const { prodname, prodimg, price, quantity } = req.body;
+  const {
+    prodname,
+    prodimg,
+    category,
+    price,
+    stock
+  } = req.body;
   let sql = `UPDATE products SET ? WHERE id = ${req.params.id} `;
   const product = {
     prodname,
