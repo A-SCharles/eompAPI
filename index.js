@@ -365,7 +365,7 @@ router.get("/users/:id/cart", middleware, (req, res) => {
           //   status: 200,
           //   result: results,
           // });
-          res.json({results : results[0].cart});
+          res.send(results[0].cart);
         } else {
           res.json({
             msg: "Please Login",
