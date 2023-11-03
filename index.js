@@ -287,6 +287,32 @@ router.put("/users/:id", middleware, bodyParser.json(), (req, res) => {
   });
 });
 
+// update user password
+router.put("/:id/pass", middleware, bodyParser.json(), async (req, res) => {
+  try {
+    const strQry = `UPDATE users SET ? WHERE id = ${req.params.id}`;
+    const {
+      password
+    } = req.body
+
+    const user = {
+      password
+    }
+    user.password = await hash(user.password, 10)
+    con.query(strQry, user, async (err, results) => {
+      if (err) throw err;
+      res.json({
+        msg: "Updated Password Successfully",
+        results
+      })
+    })
+  } catch (error) {
+    res.send(400).json({
+      error
+    })
+  }
+})
+
 // Delete users
 router.delete("/users/:id", middleware, (req, res) => {
   if (req.user.usertype === "Admin") {
@@ -339,7 +365,7 @@ router.get("/users/:id/cart", middleware, (req, res) => {
           //   status: 200,
           //   result: results,
           // });
-          res.send(results[0].cart);
+          res.json({results : results[0].cart});
         } else {
           res.json({
             msg: "Please Login",
